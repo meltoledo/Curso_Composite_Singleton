@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Gráfico de Barras</title>
+		<script src="lib/apexcharts.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	</head>
+	<body>
+		<h1>Alunos por curso - 2023</h1>
+		<br>
+		<div id="chart"></div>
+ <script>
+	
+	$(function(){
+		$.ajax({
+			type:"GET",
+			url:"index.php",
+			data:"controle=cursoController&metodo=buscar_dados_grafico",
+			dataType:"json",
+			success:function(dados){
+			
+				if(dados.length > 0)
+				{
+					grafico(dados);
+				}
+				else
+				{
+					document.getElementById("chart").innerHTML = "<h1>Não há dados para geração do gráfico</h1>";
+				}
+				
+				
+			},
+			error:function(){
+				alert("Deu ruim");
+			}
+			
+		});
+	});
+
+	function grafico(dados)
+	{
+		var valores = [];
+		var legendas = [];
+		
+		for(var x=0; x < dados.length; x++)
+		{
+			valores[x] = parseInt(dados[x].valor);
+			legendas[x] = dados[x].nome;
+		}
+		
+        var options = {
+          series: [{
+          name: 'aluno(s):',
+          data: valores
+        }],
+          chart: {
+          height: 350,
+          type: 'bar',
+        },
+        plotOptions: {
+          bar: {
+            borderRadius: 10,
+            dataLabels: {
+              position: 'top', // top, center, bottom
+            },
+          }
+        },
+        dataLabels: {
+          enabled: true,
+          
+          offsetY: -20,
+          style: {
+            fontSize: '12px',
+            colors: ["#304758"]
+          }
+        },
+        
+        xaxis: {
+          categories: legendas,
+          position: 'bottom',
+          axisBorder: {
+            show: false
+          },
+          axisTicks: {
+            show: false
+          },
+          crosshairs: {
+            fill: {
+              type: 'gradient',
+              gradient: {
+                colorFrom: '#D8E3F0',
+                colorTo: '#BED1E6',
+                stops: [0, 100],
+                opacityFrom: 0.4,
+                opacityTo: 0.5,
+              }
+            }
+          },
+          tooltip: {
+            enabled: true,
+          }
+        },
+        yaxis: {
+          axisBorder: {
+            show: false
+          },
+          axisTicks: {
+            show: false,
+          },
+          labels: {
+            show: false,
+           
+          }
+        
+        }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+	}
+</script>
+</body>
+</html>
